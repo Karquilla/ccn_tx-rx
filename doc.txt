@@ -1,0 +1,81 @@
+The goal of this assignment is to practice code writing using sockets and implement communication
+between a sender and receiver.
+In this assignment, you have been provided with two simple implementations of coding that implements
+network communication between a sender and a receiver.
+Follow the steps below to run the code properly.
+
+1. Open the commented_receiver1.cpp and commented_sender1.cpp program files
+attached to this assignment. Study the code. The code is written in C++ but follows a procedural
+style (similar to C) rather than an object oriented one.
+
+2. Use any FTP program (i.e. Filezilla or SSH Client) to transfer the sender and receiver program
+files from your machine to a Kent Linux machine such as wasp, or hornet – For both machines,
+use your current Flashline username and password to access them
+The complete address of those machines is:
+• wasp.cs.kent.edu
+• hornet.cs.kent.edu
+
+3. Open a terminal console (i.e. with Putty, or an SSH client on your machine) and login into your
+account on wasp or hornet. This will be your first terminal console. Then, repeat these steps to
+open a second terminal console, which will act as a separate host. One terminal will simulate a
+receiver, and the other a sender. Keep both terminals open throughout the exercise.
+
+4. In one of the terminals, locate the commented_receiver1.cpp and
+commented_sender1.cpp files you transferred and compile them.
+To compile the C++ program, use the following g++ command
+g++ file.cpp -o executable_name
+
+5. In both terminals, navigate to the directory where you compiled the programs in step 4.
+
+6. In the first terminal, simulate the receiver by running the receiver executable. Start by running
+the receiver first, as messages sent by the sender will be lost if the receiver isn’t ready to
+receive. Run the receiver with:
+./receiver_executable_name
+IMPORTANT! Don't run the sender before starting the receiver, as any messages sent before the
+receiver is ready will not be captured!
+
+7. In the second terminal simulate the sender by running the sender executable. Since the receiver
+is ready to receive, any data sent by the sender will be captured by the receiver.
+
+8. When the sender is executed, a series of characters are transmitted, and the receiver will
+display the received message. Note that this communication is unidirectional: the receiver does
+does not reply to the sender.
+TO DO:
+
+1. (20%) Study the sender and receiver code provided, using it as a base for the required
+modifications in this assignment. The code includes extensive comments to facilitate its
+comprehension. Research any commands, libraries, or other elements you need to understand
+more thoroughly. Summarize in your report what you learned from the code, especially noting
+anything that is new to you.
+
+2. (80%) Make the following modifications, testing your code after each step:
+    a. (10%) Modify the code to support the transmission of larger messages. Test your
+    modification.
+    b. (10%) Include a sequence number in each message and enable the program to send and
+    receive multiple messages at once. The messages transmitted should be automatically
+    generated strings (for example, random generated numbers). Test your modifications.
+    c. (15%) Add a timer that stops the process if a message is not received within a certain
+    timeframe, causing an error. Test the code for proper functionality.
+    d. (15%) Modify the sender so that it replies to the receiver with its own automatically
+    generated message (again here you can use a random generator). Test the modified
+    code.
+    e. (15%) Implement functionality to resend a message if an error occurs. Test this new
+    functionality.
+    When you are done with step e , rename your files receiver_ae.cpp and
+    sender_ae.cpp respectively.
+    f. (15%) Modify sender_ae.cpp and receiver_ae.cpp to simulate a basic texting
+    app where two users sitting at different terminals (under the same account) send
+    messages to each other. Replace automatic messages with users input for each
+    message. Rename these files sender_f.cpp/receiver_f.cpp resp. Test your
+    code to ensure it works as expected.
+    The final code from part a. to part e. represents an extension of the protocol shown in Figure 3-
+    14 of your textbook. Test the final code and include in your report multiple screenshots that
+    demonstrate the program activity.
+    
+Deliverables: Items to submit:
+1. the report (be sure it includes the testing screenshots for each step pf Part 2. )
+2. the source code, together with the executable code, of the following 4 files:
+• receiver_ae.cpp
+• sender_ae.cpp
+• receiver_f.cpp
+• sender_f.cpp
