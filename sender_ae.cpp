@@ -24,52 +24,95 @@ std::string generateMessage() {
     return randMsg;
 }
 
-int main() {
-    std::vector<std::string> data;
-    const char* SOCKET_PATH = "./receiver_soc";
-    sockaddr_un peer;
-    int soc;
-    peer.sun_family = AF_UNIX;
-    std::strcpy(peer.sun_path, SOCKET_PATH);
+void cleanup(int soc, const char *path) {
+    close(soc);
+    unlink(path);
+}
 
-    soc = socket(AF_UNIX, SOCK_DGRAM, 0);
+int main() {
+    const char* SENDER_SOCKET_PATH = "./sender_soc";
+    const char* RECEIVER_SOCKET_PATH = "./receiver_soc";
+    sockaddr_un sender_addr, receiver_addr;
+
+    // Create sender socket
+    int soc = socket(AF_UNIX, SOCK_DGRAM, 0);
     if (soc < 0) {
-        std::cerr << "Socket creation failed\n";
+        perror("Socket creation failed");
         return 1;
     }
 
-   
-   
+    // Bind sender socket to a unique path
+    sender_addr.sun_family = AF_UNIX;
+    std::strcpy(sender_addr.sun_path, SENDER_SOCKET_PATH);
 
+    if (bind(soc, (sockaddr*)&sender_addr, sizeof(sender_addr)) < 0) {
+        perror("Bind failed for sender");
+        cleanup(soc, SENDER_SOCKET_PATH);
+        return 1;
+    }
+
+    // Set up receiver address
+    receiver_addr.sun_family = AF_UNIX;
+    std::strcpy(receiver_addr.sun_path, RECEIVER_SOCKET_PATH);
+
+    // Generate random messages to send
+    std::vector<std::string> data;
     int seqNum = 0;
     int messageCount = getRand(1, 5);
     for (int i = 0; i < messageCount; i++) {
         data.push_back(generateMessage());
     }
-    data.push_back("\0");
+    data.push_back("END");
 
+    // Send messages to receiver
     for (auto &message : data) {
-        message = std::to_string(seqNum) + message; // Add sequence number
-        char sizeOfMessage = message.length() + '0'; // Single-byte size
-        int sizeSent = sendto(soc, &sizeOfMessage, 1, 0, (sockaddr *)&peer, sizeof(peer));
-        if (sizeSent < 0) {
+        message = std::to_string(seqNum) + message;
+        uint8_t sizeOfMessage = static_cast<uint8_t>(message.length());
+
+        // Send size of the message
+        if (sendto(soc, &sizeOfMessage, 1, 0, (sockaddr*)&receiver_addr, sizeof(receiver_addr)) < 0) {
             perror("sendto failed for size");
-            close(soc);
+            cleanup(soc, SENDER_SOCKET_PATH);
             return 1;
         }
         sleep(1);
-        const char *msg = message.c_str();
-        int n = sendto(soc, msg, message.length(), 0, (sockaddr *)&peer, sizeof(peer));
-        if (n < 0) {
+
+        // Send the actual message
+        if (sendto(soc, message.c_str(), message.length(), 0, (sockaddr*)&receiver_addr, sizeof(receiver_addr)) < 0) {
             perror("sendto failed for message");
-            close(soc);
+            cleanup(soc, SENDER_SOCKET_PATH);
             return 1;
         }
         sleep(1);
+        if (message.substr(1) == "END") {
+                    break;
+        }
+        std::cout << "Sent message: " << message << "\n";
+       
+
+        // Receive reply from receiver
+        uint8_t replySize;
+        sockaddr_un peer_addr;
+        socklen_t peer_len = sizeof(peer_addr);
+        if (recvfrom(soc, &replySize, 1, 0, (sockaddr*)&peer_addr, &peer_len) < 0) {
+            perror("recvfrom failed for size");
+            cleanup(soc, SENDER_SOCKET_PATH);
+            return 1;
+        }
+
+        char reply[replySize + 1];
+        if (recvfrom(soc, reply, replySize, 0, (sockaddr*)&peer_addr, &peer_len) < 0) {
+            perror("recvfrom failed for message");
+            cleanup(soc, SENDER_SOCKET_PATH);
+            return 1;
+        }
+        reply[replySize] = '\0';
+        std::cout << "Received reply: " << reply << "\n";
+
         seqNum++;
-        std::cout << "Sent message: " << message << " (" << n << " bytes)\n";
+        
     }
 
-    close(soc);
+    cleanup(soc, SENDER_SOCKET_PATH);
     return 0;
 }
