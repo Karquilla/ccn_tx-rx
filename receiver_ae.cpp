@@ -58,7 +58,6 @@ int main() {
     }
 
     while (true) {
-        memset(&peer, 0, sizeof(peer));
         peer_len = sizeof(peer);
 
         uint8_t sizeNum;
@@ -83,7 +82,7 @@ int main() {
         }
 
         int seqNum = std::stoi(msg.substr(0, 1));
-        std::cout << "Message number: " << seqNum << " Received message: " << msg.substr(1) << "\n";
+        std::cout << " Received message " << seqNum << " : "<< msg.substr(1) << "\n";
 
         std::string reply = std::to_string(seqNum) + generateMessage();
         uint8_t replySize = static_cast<uint8_t>(reply.length());

@@ -24,7 +24,7 @@ clean:
 
 # Run sender
 run_sender: sender
-	./sender test
+	./sender
 
 # Run receiver
 run_receiver: receiver

@@ -87,7 +87,7 @@ int main() {
         if (message.substr(1) == "END") {
                     break;
         }
-        std::cout << "Sent message: " << message << "\n";
+        std::cout << "Sent message "<< seqNum << " : " << message.substr(1) << "\n";
        
 
         // Receive reply from receiver
@@ -107,7 +107,8 @@ int main() {
             return 1;
         }
         reply[replySize] = '\0';
-        std::cout << "Received reply: " << reply << "\n";
+        std::string replyStr = reply;
+        std::cout << "Received reply "<< replyStr.substr(0,1) << " : " << replyStr.substr(1) << "\n";
 
         seqNum++;
         
