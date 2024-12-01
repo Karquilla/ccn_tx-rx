@@ -5,13 +5,19 @@ CXX = g++
 CXXFLAGS = -Wall -Wextra -std=c++17
 
 # Targets
-all: sender receiver
+project: sender receiver
 
-# Compile and link sender
+messenger: messenger_sender messenger_receiver
+
+messenger_sender:
+	$(CXX) $(CXXFLAGS) -o sender sender_f.cpp
+
+messenger_receiver:
+	$(CXX) $(CXXFLAGS) -o receiver receiver_f.cpp
+
 sender: sender_ae.cpp
 	$(CXX) $(CXXFLAGS) -o sender sender_ae.cpp
 
-# Compile and link receiver
 receiver: receiver_ae.cpp
 	$(CXX) $(CXXFLAGS) -o receiver receiver_ae.cpp
 
@@ -20,12 +26,4 @@ receiver: receiver_ae.cpp
 
 # Clean the build
 clean:
-	rm -f sender receiver
-
-# Run sender
-run_sender: sender
-	./sender
-
-# Run receiver
-run_receiver: receiver
-	./receiver
+	rm -f sender receiver receiver_soc sender_soc p1_sender p1_receiver p2_sender p2_receiver
